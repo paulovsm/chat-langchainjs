@@ -26,6 +26,11 @@ First, you should run
 sh download.sh
 ```
 
+_Note: hat bei mir nicht funktioniert (Windows)_
+
+_Workaround: neues Notebook in colab, dort `!wget -q -r -A.html https://langchain.readthedocs.io/en/latest/`, \
+dann die Daten über GoogleDrive rüberkopieren_
+
 This will download our data source (in this case the Langchain docs ).
 
 Next, install dependencies and run the ingestion script:
