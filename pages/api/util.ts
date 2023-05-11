@@ -1,9 +1,10 @@
-import { OpenAI } from "langchain/llms";
-import { LLMChain, ChatVectorDBQAChain, loadQAChain } from "langchain/chains";
-import { HNSWLib } from "langchain/vectorstores";
-import { PromptTemplate } from "langchain/prompts";
+import { OpenAI } from 'langchain/llms/openai';
+import { LLMChain, ConversationalRetrievalQAChain, loadQAChain } from 'langchain/chains';
+import { HNSWLib } from 'langchain/vectorstores/hnswlib';
+import { PromptTemplate } from 'langchain/prompts';
 
-const CONDENSE_PROMPT = PromptTemplate.fromTemplate(`Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
+const CONDENSE_PROMPT =
+  PromptTemplate.fromTemplate(`Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
 
 Chat History:
 {chat_history}
@@ -21,28 +22,30 @@ Question: {question}
 =========
 {context}
 =========
-Answer in Markdown:`);
+Answer in Markdown:`
+);
 
 export const makeChain = (vectorstore: HNSWLib, onTokenStream?: (token: string) => void) => {
   const questionGenerator = new LLMChain({
     llm: new OpenAI({ temperature: 0 }),
     prompt: CONDENSE_PROMPT,
   });
-  const docChain = loadQAChain(
-    new OpenAI({
-      temperature: 0,
-      streaming: Boolean(onTokenStream),
-      callbackManager: {
-        handleNewToken: onTokenStream,
-      }
-    }),
-    { prompt: QA_PROMPT },
-  );
 
-  return new ChatVectorDBQAChain({
-    vectorstore,
+  const model = new OpenAI({
+    temperature: 0,
+    streaming: Boolean(onTokenStream),
+    callbacks: [
+      {
+        handleLLMNewToken: onTokenStream,
+      },
+    ],
+  });
+
+  const docChain = loadQAChain(model, { type: 'stuff', prompt: QA_PROMPT });
+
+  return new ConversationalRetrievalQAChain({
+    retriever: vectorstore.asRetriever(),
     combineDocumentsChain: docChain,
     questionGeneratorChain: questionGenerator,
   });
-}
-
+};
