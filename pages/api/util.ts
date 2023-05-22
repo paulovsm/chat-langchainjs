@@ -1,6 +1,6 @@
 import { OpenAI } from 'langchain/llms/openai';
 import { LLMChain, ConversationalRetrievalQAChain, loadQAChain } from 'langchain/chains';
-import { HNSWLib } from 'langchain/vectorstores/hnswlib';
+import { FaissStore } from 'langchain/vectorstores/faiss';
 import { PromptTemplate } from 'langchain/prompts';
 
 const CONDENSE_PROMPT =
@@ -12,12 +12,12 @@ Follow Up Input: {question}
 Standalone question:`);
 
 const QA_PROMPT = PromptTemplate.fromTemplate(
-  `You are an AI assistant for the open source library LangChain. The documentation is located at https://langchain.readthedocs.io.
-You are given the following extracted parts of a long document and a question. Provide a conversational answer with a hyperlink to the documentation.
-You should only use hyperlinks that are explicitly listed as a source in the context. Do NOT make up a hyperlink that is not listed.
-If the question includes a request for code, provide a code block directly from the documentation.
-If you don't know the answer, just say "Hmm, I'm not sure." Don't try to make up an answer.
-If the question is not about LangChain, politely inform them that you are tuned to only answer questions about LangChain.
+  `Você é um assistente de IA do site Storyverse. O site está localizado em http://familyverse.bagagemlab.com/.
+  Você recebe as como entrada partes extraídas do site e uma pergunta. Forneça uma resposta de conversação com um hiperlink (http://familyverse.bagagemlab.com/)
+  para documentação somente quando necessário.
+  Você só deve usar hiperlinks explicitamente listados como fonte no contexto. NÃO crie um hiperlink que não esteja listado.
+  Quando solicitado a criar algo novo, use sua criatividade para criar algo que pareça natural e que não seja uma cópia exata do contexto.
+  Se você não souber a resposta, apenas diga "Hmm, não tenho certeza". Não tente inventar uma resposta.
 Question: {question}
 =========
 {context}
@@ -25,14 +25,15 @@ Question: {question}
 Answer in Markdown:`
 );
 
-export const makeChain = (vectorstore: HNSWLib, onTokenStream?: (token: string) => void) => {
+export const makeChain = (vectorstore: FaissStore, onTokenStream?: (token: string) => void) => {
   const questionGenerator = new LLMChain({
-    llm: new OpenAI({ temperature: 0 }),
+    llm: new OpenAI({ temperature: 0, maxTokens: 1000 }),
     prompt: CONDENSE_PROMPT,
   });
 
   const model = new OpenAI({
-    temperature: 0,
+    temperature: 0.7,
+    maxTokens: 1000,
     streaming: Boolean(onTokenStream),
     callbacks: [
       {

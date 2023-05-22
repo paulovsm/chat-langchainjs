@@ -40,3 +40,4 @@ next-env.d.ts
 
 ingested_data/
 langchain.readthedocs.io/
+source_documents/

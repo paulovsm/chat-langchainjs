@@ -18,7 +18,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [messageState, setMessageState] = useState<{ messages: Message[], pending?: string, history: [string, string][] }>({
     messages: [{
-      "message": "Hi there! How can I help?",
+      "message": "Olá! Como posso ajudar?",
       "type": "apiMessage"
     }],
     history: []
@@ -116,25 +116,25 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>LangChain Chat</title>
-        <meta name="description" content="LangChain documentation chatbot" />
+        <title>Storyverse Chat</title>
+        <meta name="description" content="Storyverse website chatbot" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className={styles.topnav}>
         <div className = {styles.navlogo}>
-          <Link href="/">LangChain</Link>
+          <Link href="/">Storyverse</Link>
         </div>
         <div className = {styles.navlinks}>
           <a
-            href="https://langchain.readthedocs.io/en/latest/"
+            href="http://familyverse.bagagemlab.com/index.php"
             target="_blank"
             rel="noreferrer"
           >
-            Docs
+            Stories
           </a>
           <a
-            href="https://github.com/zahidkhawaja/langchain-chat-nextjs"
+            href="https://github.com/paulovsm/chat-langchainjs"
             target="_blank"
             rel="noreferrer"
           >
@@ -209,7 +209,7 @@ export default function Home() {
           <div className = {styles.footer}>
             <p>Powered by <a href="https://github.com/hwchase17/langchain" target="_blank" rel="noreferrer">
                 LangChain
-              </a>. Built by <a href="https://twitter.com/chillzaza_" target="_blank" rel="noreferrer">Zahid</a> and <a href="https://twitter.com/_seanyneutron" target="_blank" rel="noreferrer">Sean</a>.</p>
+              </a>. Built by <a href="https://github.com/paulovsm/" target="_blank" rel="noreferrer">Paulovsm</a>.</p>
           </div>
         </div>
       </main>

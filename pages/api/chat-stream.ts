@@ -3,9 +3,10 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import type { Server as HttpServer } from "http";
 import type { Server as HttpsServer } from "https";
 import { WebSocketServer } from 'ws';
-import { HNSWLib } from "langchain/vectorstores";
+import { FaissStore } from "langchain/vectorstores/faiss";
 import { OpenAIEmbeddings } from 'langchain/embeddings';
 import { makeChain } from "./util";
+import path from 'path';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if ((res.socket as any).server.wss) {
@@ -16,6 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const server = (res.socket as any).server as HttpsServer | HttpServer;
   const wss = new WebSocketServer({ noServer: true });
   (res.socket as any).server.wss = wss;
+
+  const dir = path.resolve(process.cwd(), 'db/faiss_index');
   
   server.on('upgrade', (req, socket, head) => {
     if (!req.url?.includes('/_next/webpack-hmr')) {
@@ -34,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       sendResponse({ sender: 'bot', message: token, type: 'stream' });
     }
 
-    const chainPromise = HNSWLib.load("data", new OpenAIEmbeddings()).then((vs) => makeChain(vs, onNewToken));
+    const chainPromise = FaissStore.loadFromPython(dir, new OpenAIEmbeddings()).then((vs) => makeChain(vs, onNewToken));
     const chatHistory: [string, string][] = [];
     const encoder = new TextEncoder();
 

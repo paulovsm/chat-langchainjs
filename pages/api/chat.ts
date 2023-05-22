@@ -1,15 +1,15 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import path from 'path';
-import { HNSWLib } from 'langchain/vectorstores/hnswlib';
+import { FaissStore } from 'langchain/vectorstores/faiss';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { makeChain } from './util';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const body = req.body;
-  const dir = path.resolve(process.cwd(), 'data');
+  const dir = path.resolve(process.cwd(), 'db/faiss_index');
 
-  const vectorstore = await HNSWLib.load(dir, new OpenAIEmbeddings());
+  const vectorstore = await FaissStore.loadFromPython(dir, new OpenAIEmbeddings())
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     // Important to set no-transform to avoid compression, which will delay
