@@ -26,25 +26,17 @@ Next, we'll need to load our data source.
 
 Data ingestion happens in two steps.
 
-First, you should run
-
-```bash
-sh download.sh
-```
-
-_Note: hat bei mir nicht funktioniert (Windows)_
-
-_Workaround: neues Notebook in colab, dort `!wget -q -r -A.html https://langchain.readthedocs.io/en/latest/`, \
-dann die Daten über GoogleDrive rüberkopieren_
-
-This will download our data source (in this case the Langchain docs ).
+First, you should install dependencies and run the ingestion script:
 
 Next, install dependencies and run the ingestion script:
 
 ```bash
-yarn && yarn ingest
+yarn
+cd ingest
+pip install -r requirements.txt
+python ingest_url.py
+python ingest_docs.py
 ```
-
 _Note: If on Node v16, use `NODE_OPTIONS='--experimental-fetch' yarn ingest`_
 
 This will parse the data, split text, create embeddings, store them in a vectorstore, and
@@ -68,7 +60,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ### Deploying the server
 
 The production version of this repo is hosted on
-[fly](https://chat-langchainjs.fly.dev/). To deploy your own server on Fly, you
+[fly](https://storyverse-chat.fly.dev/). To deploy your own server on Fly, you
 can use the provided `fly.toml` and `Dockerfile` as a starting point.
 
 ## Inspirations

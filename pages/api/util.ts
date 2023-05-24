@@ -27,7 +27,9 @@ Answer in Markdown:`
 
 export const makeChain = (vectorstore: FaissStore, onTokenStream?: (token: string) => void) => {
   const questionGenerator = new LLMChain({
-    llm: new OpenAI({ temperature: 0, maxTokens: 1000 }),
+    llm: new OpenAI({ 
+      temperature: 0, 
+      maxTokens: 1000 }),
     prompt: CONDENSE_PROMPT,
   });
 
