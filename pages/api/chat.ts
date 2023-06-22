@@ -9,7 +9,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const body = req.body;
   const dir = path.resolve(process.cwd(), 'db/faiss_index');
 
-  const vectorstore = await FaissStore.loadFromPython(dir, new OpenAIEmbeddings())
+  const embeddings = new OpenAIEmbeddings({
+    azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
+    azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME,
+    azureOpenAIApiDeploymentName: "legalbrainembedding", // In Node.js defaults to process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME
+    azureOpenAIApiVersion: process.env.AZURE_OPENAI_API_VERSION
+  });
+
+  const vectorstore = await FaissStore.loadFromPython(dir, embeddings)
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     // Important to set no-transform to avoid compression, which will delay

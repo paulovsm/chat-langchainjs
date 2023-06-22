@@ -38,6 +38,9 @@ ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+RUN mkdir -p /nonexistent/.npm/_logs
+RUN mkdir -p /nonexistent/.npm/_cacache/tmp
+RUN chown -R 1001:65534 "/nonexistent/.npm"
 
 USER nextjs
 

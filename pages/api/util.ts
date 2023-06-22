@@ -1,4 +1,4 @@
-import { OpenAI } from 'langchain/llms/openai';
+import { OpenAIChat } from 'langchain/llms/openai';
 import { LLMChain, ConversationalRetrievalQAChain, loadQAChain } from 'langchain/chains';
 import { FaissStore } from 'langchain/vectorstores/faiss';
 import { PromptTemplate } from 'langchain/prompts';
@@ -13,7 +13,7 @@ Standalone question:`);
 
 const QA_PROMPT = PromptTemplate.fromTemplate(
   `Você é um assistente de IA do site Storyverse. O site está localizado em http://familyverse.bagagemlab.com/.
-  Você recebe as como entrada partes extraídas do site e uma pergunta. Forneça uma resposta de conversação com um hiperlink (http://familyverse.bagagemlab.com/)
+  Você recebe as como entrada partes extraídas do site e uma pergunta. Forneça uma resposta com um hiperlink (http://familyverse.bagagemlab.com/)
   para documentação somente quando necessário.
   Você só deve usar hiperlinks explicitamente listados como fonte no contexto. NÃO crie um hiperlink que não esteja listado.
   Quando solicitado a criar algo novo, use sua criatividade para criar algo que pareça natural e que não seja uma cópia exata do contexto.
@@ -27,15 +27,23 @@ Answer in Markdown:`
 
 export const makeChain = (vectorstore: FaissStore, onTokenStream?: (token: string) => void) => {
   const questionGenerator = new LLMChain({
-    llm: new OpenAI({ 
-      temperature: 0, 
-      maxTokens: 1000 }),
+    llm: new OpenAIChat({ 
+      temperature: 0,
+      azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
+      azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME,
+      azureOpenAIApiDeploymentName: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
+      azureOpenAIApiVersion: process.env.AZURE_OPENAI_API_VERSION,
+      maxTokens: 2048 }),
     prompt: CONDENSE_PROMPT,
   });
 
-  const model = new OpenAI({
+  const model = new OpenAIChat({
     temperature: 0.7,
-    maxTokens: 1000,
+    azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY,
+    azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME,
+    azureOpenAIApiDeploymentName: process.env.AZURE_OPENAI_API_DEPLOYMENT_NAME,
+    azureOpenAIApiVersion: process.env.AZURE_OPENAI_API_VERSION,
+    maxTokens: 2048,
     streaming: Boolean(onTokenStream),
     callbacks: [
       {
